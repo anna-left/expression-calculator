@@ -1,5 +1,6 @@
 const strSign = '+-*/()';
-const messErr = "ExpressionError: Brackets must be paired";
+const messErrBrack = "ExpressionError: Brackets must be paired";
+const messErrZero = "TypeError: Division by zero.";
 
 function eval() {
     // Do not use eval!!!
@@ -32,16 +33,20 @@ function expressionCalculator(expr) {
     arr = lArr.filter(element => element !== ''); //удаление пустых элементов
 
     arr = searchBrackets(arr); //ищем скобки
-    if (arr === messErr) {
-        return messErr;
+    if (arr === messErrBrack) {
+        throw messErrBrack;
     }
 
     //ищем лишние непарные скобки
+    if (arr.includes('(', 0) === true || arr.includes('((', 0) === true) {
+        throw messErrBrack;
+    }
+
     if (arr.indexOf('(', 0) !== -1) {
-        return messErr;
+        throw messErrBrack;
     }
     if (arr.indexOf(')', 0) !== -1) {
-        return messErr;
+        throw messErrBrack;
     }
 
     res = takeOper(arr);
@@ -60,6 +65,9 @@ function takeOper(arr) {
                 arr.splice(i - 1, 3, curExp);
                 break;
             case '/':
+                if (Number(arr[i + 1]) === 0) {
+                    throw messErrZero;
+                }
                 curExp = Number(arr[i - 1]) / Number(arr[i + 1]);
                 arr.splice(i - 1, 3, curExp);
                 break;
@@ -102,7 +110,7 @@ function searchBrackets(arr) {
         }
         posLeftBrack = arr.lastIndexOf('(', posRightBrack); //ищем левую скобку справа налево
         if (posLeftBrack === -1) {
-            return messErr;
+            throw messErrBrack;
         }
         shortArr = arr.slice(posLeftBrack + 1, posRightBrack);
         exp = takeOper(shortArr); //вычисляем выражение в скобках
